@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ureca.task.model.dao.TaskDAO">
+ 
+  <insert id="insert" parameterType="Task">
+     insert into task (title,content,user_id) values (#{title},#{content}, #{userId})
+  </insert>
+  
+  <update id="updateContext" parameterType="Task">
+  	update task set title=#{title}, content=#{content} where tid=#{tid}
+<!--      <set>
+     	<if test="title != null">
+     		title = #{title},
+     	</if>
+     	<if test="content != null">
+     		content = #{content}
+     	</if>
+     </set>
+     where tid = #{tid} -->
+  </update>
+  
+  <update id="updateToComplete" parameterType="Integer">
+  	update task set is_completed=TRUE where tid=#{tid}
+  </update>
+  
+  <update id="updateAllToPostponed">
+  	update task set is_postponed=true where is_completed=false and date(created_at) = date(curdate()-interval 1 day)
+  </update>
+  
+  <delete id="delete" parameterType="Integer">
+    delete from task where tid=#{tid}
+  </delete>
+  
+  <select id="selectUserAll" parameterType="String" resultType="Task">
+  	select tid, title, content, is_completed as isCompleted, is_postponed as isPostponed, 
+  	created_at as createdAt, user_id as userId 
+  	from task where user_id=#{userId}
+  </select>
+  
+  <select id="selectUserUncompletedAll" parameterType="String" resultType="Task">
+  	select tid, title, content, is_completed as isCompleted, is_postponed as isPostponed, 
+  	created_at as createdAt, user_id as userId 
+  	from task 
+  	where user_id=#{userId} and is_completed=false and is_postponed=false and created_at=curdate()
+  </select>
+  
+  <select id="selectUserPostponedAll" parameterType="String" resultType="Task">
+  	select tid, title, content, is_completed as isCompleted, is_postponed as isPostponed, 
+  	created_at as createdAt, user_id as userId 
+  	from task where user_id=#{userId} and is_completed=false and is_postponed=true 
+  </select>
+  
+  <select id="selectAll" resultType="Task">
+    select tid, title, content, is_completed as isCompleted, is_postponed as isPostponed, 
+  	created_at as createdAt, user_id as userId 
+  	from task order by created_at
+  </select>
+  
+  <select id="select" parameterType="Integer" resultType="Task">
+  	select tid, title, content, is_completed as isCompleted, is_postponed as isPostponed, 
+  	created_at as createdAt, user_id as userId
+  	from task where tid=#{tid}
+  </select>
+  
+  <select id="selectUserCompletedAll" parameterType="String" resultType="Task">
+  	select tid, title, content, is_completed as isCompleted, is_postponed as isPostponed, 
+  	created_at as createdAt, user_id as userId 
+  	from task 
+  	where user_id=#{userId} and is_completed=true
+  </select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
